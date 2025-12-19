@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cidog Pedog - Toko Gorengan Online</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #fff4c2, #ffd26f);
+    }
+    header {
+      background: #ff9f1c;
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .container {
+      width: 90%;
+      margin: auto;
+      padding: 20px 0;
+    }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .product {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: 0.2s;
+    }
+    .product:hover { transform: scale(1.05); }
+    input[type=number] {
+      width: 50px;
+      padding: 5px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+      text-align: center;
+    }
+    button {
+      padding: 8px 15px;
+      border: none;
+      background: #ef233c;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 5px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+    button:hover { background: #d90429; transform: scale(1.05); }
+    #cart {
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .cart-item span {
+      margin: 0 5px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="text-align:left;">
+    <div style="font-size:20px; font-weight:800;">Cidog Pedog Penanggapan (CPP)</div>
+    <div style="font-size:12px; opacity:0.9;">BY SAHDAN - NO 082129025843</div>
+  </div>
+</header>
+
+<div class="container" id="home-page">
+  <h2>Selamatdatang Di Toko Online<h2>
+
+  <label><b>Masukkan Nama Pembeli:</b></label>
+  <input id="buyer-name" type="text" placeholder="Contoh: budi" style="width:100%; padding:10px; margin-bottom:20px; border-radius:8px; border:1px solid #aaa;">
+
+  <label><b>Pilih Lokasi Pengantaran ongkir :</b></label>
+  <select id="shipping-location" style="width:100%; padding:10px; margin-bottom:20px; border-radius:8px;">
+    <option value="1000">penanggapan (Rp 1000)</option>
+    <option value="2000">cibuni (Rp 2000)</option>
+    <option value="5000">cibingbin (Rp 5000)</option>
+  </select>
+
+  <div class="product-list">
+
+    <div class="product">
+      <img src="https://cdn.grid.id/crop/0x0:0x0/filters:format(webp):quality(100)/photo/2022/07/20/resep-tempe-goreng-tusuk-kemangi-20220720024342.jpg" style="width:100%; border-radius:10px; margin-bottom:10px;">
+      <h3>Pedog</h3>
+      <p>Rp 1.000</p>
+      <button onclick="addToCart('Pedog',1000)">Tambah</button>
+    </div>
+
+    <div class="product">
+      <img src="https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2022/08/08/2527612504.jpg" style="width:100%; border-radius:10px; margin-bottom:10px;">
+      <h3>Cidog</h3>
+      <p>Rp 1.000</p>
+      <button onclick="addToCart('Cidog',1000)">Tambah</button>
+    </div>
+
+    <div class="product">
+      <img src="https://www.trenmedia.co.id/wp-content/uploads/2025/09/2966694211.webp" style="width:100%; border-radius:10px; margin-bottom:10px;">
+      <h3>Bilor</h3>
+      <p>Rp 1.000</p>
+      <button onclick="addToCart('Bilor',1000)">Tambah</button>
+    </div>
+
+  </div>
+
+  <div id="cart">
+    <h2>Keranjang</h2>
+    <div id="cart-items"></div>
+    <h3>Total: Rp <span id="total">0</span></h3>
+    <button onclick="finishOrder()">Checkout</button>
+  </div>
+</div>
+
+<script>
+  let cart = [];
+  
+  function addToCart(name, price) {
+    let item = cart.find(i => i.name === name);
+    if(item) {
+      item.quantity += 1;
+    } else {
+      cart.push({name, price, quantity: 1});
+    }
+    updateCart();
+  }
+
+  function updateCart() {
+    const list = document.getElementById('cart-items');
+    list.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item,index) => {
+      total += item.price * item.quantity;
+
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+
+      div.innerHTML = `
+        <span>${item.name}</span>
+        <div>
+          <button onclick="changeQty(${index}, -1)">-</button>
+          <span>${item.quantity}</span>
+          <button onclick="changeQty(${index}, 1)">+</button>
+          <span>Rp ${item.price * item.quantity}</span>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+
+    document.getElementById('total').innerText = total;
+  }
+
+  function changeQty(index, delta) {
+    cart[index].quantity += delta;
+    if(cart[index].quantity <= 0) {
+      cart.splice(index,1);
+    }
+    updateCart();
+  }
+
+  function finishOrder() {
+    const name = document.getElementById('buyer-name').value;
+    const shipping = parseInt(document.getElementById('shipping-location').value);
+
+    if(!name){
+      alert("Nama pembeli belum diisi!");
+      return;
+    }
+    if(cart.length === 0){
+      alert("Keranjang kosong!");
+      return;
+    }
+
+    let orderList = cart.map(i=>`- ${i.name} x${i.quantity} (Rp ${i.price*i.quantity})`).join('\n');
+    let total = cart.reduce((sum,i)=>sum + i.price*i.quantity,0);
+    let grandTotal = total + shipping;
+    let phone = "6282129025843";
+
+    let message = `assalamualaikum nama abi ${name}
+abi bade pesen:
+
+${orderList}
+
+Ongkir: Rp ${shipping}
+Total Akhir: Rp ${grandTotal}
+
+Terima kasih!`;
+
+    let url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url,"_blank");
+    alert("Pesanan terkirim ke WhatsApp!");
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
